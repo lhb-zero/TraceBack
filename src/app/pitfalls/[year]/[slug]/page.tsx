@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import PitfallEditor from "@/components/PitfallEditor";
+import { mdxComponents } from "@/components/MDXComponents";
 import { getPitfall, getAllPitfallSlugs } from "@/lib/pitfalls";
 
 export function generateStaticParams() {
@@ -98,11 +100,13 @@ export default async function PitfallDetailPage({
             />
           </div>
 
-          {/* Content */}
+          {/* Content (MDX rendered) */}
           <article>
-            <div className="space-y-8 whitespace-pre-line text-base leading-[1.8] text-foreground">
-              {pitfall.content}
-            </div>
+            <MDXRemote
+              source={pitfall.content}
+              components={mdxComponents}
+              options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+            />
           </article>
 
           {/* Related project link */}

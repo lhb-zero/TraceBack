@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { MDXRemote } from "next-mdx-remote/rsc";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import RetroEditor from "@/components/RetroEditor";
+import { mdxComponents } from "@/components/MDXComponents";
 import { getRetroProject, getAllRetroSlugs } from "@/lib/retros";
 import { getPitfallsByProject } from "@/lib/pitfalls";
 
@@ -128,24 +130,33 @@ export default async function RetroDetailPage({
             </nav>
           )}
 
-          {/* Main content (rendered as plain text sections) */}
+          {/* Main content (MDX rendered) */}
           <article className="prose-tb">
-            <div className="space-y-8 whitespace-pre-line text-base leading-[1.8] text-foreground">
-              {project.content}
-            </div>
+            <MDXRemote
+              source={project.content}
+              components={mdxComponents}
+              options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+            />
           </article>
 
           {/* Milestones */}
           {project.milestones.length > 0 && (
             <section className="mt-12 border-t border-border pt-8">
               <h2 className="mb-4 text-[22px] font-bold tracking-[-0.015em]">里程碑记录</h2>
-              <div className="space-y-3">
+              <div className="space-y-6">
                 {project.milestones.map((ms) => (
-                  <div key={ms.slug} className="rounded-lg border border-border bg-surface p-4">
-                    <div className="flex items-center gap-3">
+                  <div key={ms.slug} className="rounded-lg border border-border bg-surface p-5">
+                    <div className="mb-4 flex items-center gap-3">
                       <span className="h-[9px] w-[9px] rounded-full bg-primary shadow-[0_0_0_3px_var(--tb-primary-tint)]" />
                       <span className="text-[15px] font-semibold text-foreground">{ms.frontmatter.title}</span>
                       <span className="ml-auto font-mono text-xs text-subtle">{ms.frontmatter.date}</span>
+                    </div>
+                    <div className="border-t border-border pt-4">
+                      <MDXRemote
+                        source={ms.content}
+                        components={mdxComponents}
+                        options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+                      />
                     </div>
                   </div>
                 ))}
