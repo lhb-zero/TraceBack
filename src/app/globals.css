@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+/* ============================================================
+   TraceBack · 项目复盘系统 设计令牌
+   深色开发者档案馆 / Dark developer archive
+   单一品牌色: 暖琥珀(brass amber) · 状态色为独立语义令牌
+   ============================================================ */
+
+:root {
+  /* ---- 中性表面层级 (冷蓝灰 slate) ---- */
+  --tb-background: #0d1117;
+  --tb-bg-surface: #141a22;
+  --tb-bg-surface-2: #1b232e;
+  --tb-bg-sunken: #090c12;
+  --tb-bg-content: #11161e;
+
+  /* ---- 文本 ---- */
+  --tb-foreground: #d8dee8;
+  --tb-muted-foreground: #8a93a3;
+  --tb-subtle-foreground: #5a6473;
+
+  /* ---- 品牌主色 (暖琥珀 brass) ---- */
+  --tb-primary: #e0a851;
+  --tb-primary-strong: #ecb86a;
+  --tb-primary-foreground: #1a1308;
+  --tb-primary-tint: rgba(224, 168, 81, 0.12);
+  --tb-primary-tint-strong: rgba(224, 168, 81, 0.22);
+
+  /* ---- 语义状态色 ---- */
+  --tb-state-info: #4f93d6;
+  --tb-state-success: #46b570;
+  --tb-state-warning: #d9823a;
+  --tb-state-error: #e0564f;
+  --tb-state-neutral: #6b7484;
+  --tb-info-tint: rgba(79, 147, 214, 0.14);
+  --tb-success-tint: rgba(70, 181, 112, 0.14);
+  --tb-warning-tint: rgba(217, 130, 58, 0.16);
+  --tb-error-tint: rgba(224, 86, 79, 0.15);
+  --tb-neutral-tint: rgba(107, 116, 132, 0.16);
+
+  /* ---- 边框 / 分隔 ---- */
+  --tb-border: #232c38;
+  --tb-border-strong: #313c4a;
+  --tb-input: #232c38;
+  --tb-ring: #e0a851;
+
+  /* ---- 圆角 ---- */
+  --tb-radius-small: 4px;
+  --tb-radius-medium: 8px;
+  --tb-radius-large: 12px;
+
+  /* ---- 阴影 ---- */
+  --tb-shadow-overlay: 0 10px 30px -10px rgba(0, 0, 0, 0.55);
+
+  /* ---- 布局 ---- */
+  --tb-content-max: 900px;
+  --tb-content-wide: 1040px;
+}
+
+@theme inline {
+  --color-background: var(--tb-background);
+  --color-foreground: var(--tb-foreground);
+  --color-surface: var(--tb-bg-surface);
+  --color-surface-2: var(--tb-bg-surface-2);
+  --color-sunken: var(--tb-bg-sunken);
+  --color-muted: var(--tb-muted-foreground);
+  --color-subtle: var(--tb-subtle-foreground);
+  --color-primary: var(--tb-primary);
+  --color-primary-strong: var(--tb-primary-strong);
+  --color-primary-foreground: var(--tb-primary-foreground);
+  --color-border: var(--tb-border);
+  --color-border-strong: var(--tb-border-strong);
+  --color-ring: var(--tb-ring);
+  --color-state-info: var(--tb-state-info);
+  --color-state-success: var(--tb-state-success);
+  --color-state-warning: var(--tb-state-warning);
+  --color-state-error: var(--tb-state-error);
+  --color-state-neutral: var(--tb-state-neutral);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --radius-sm: var(--tb-radius-small);
+  --radius-md: var(--tb-radius-medium);
+  --radius-lg: var(--tb-radius-large);
+}
+
+/* ============================================================
+   Base styles
+   ============================================================ */
+body {
+  background: var(--tb-background);
+  color: var(--tb-foreground);
+  font-family: var(--font-sans, "Noto Sans SC", system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--tb-border-strong) transparent;
+}
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--tb-border-strong);
+  border-radius: 6px;
+  border: 2px solid var(--tb-background);
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Selection */
+::selection {
+  background: var(--tb-primary-tint-strong);
+  color: var(--tb-foreground);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -1,0 +1,30 @@
+---
+title: "基础架构搭建与环境配置"
+date: 2026-06-15
+tags: [python, fastapi, docker]
+---
+
+## 阶段概述
+
+完成项目基础框架搭建：FastAPI 后端服务 + ChromaDB 向量存储 + Docker 容器化部署环境。实现了文档上传接口和基础的文本切分管道。
+
+## 技术要点
+
+- FastAPI 作为后端框架，异步支持好、自带 OpenAPI 文档
+- Docker Compose 编排：app + chromadb 两个服务
+- 文本切分初版用 LangChain 的 RecursiveCharacterTextSplitter，chunk_size=512
+
+## AI 协作记录
+
+- AI 生成了 FastAPI 项目骨架和 Docker 配置，基本可以直接用
+- 我修改了 CORS 配置和文件上传的大小限制（默认 1MB 太小）
+
+## 踩坑与解决
+
+- Docker 内 ChromaDB 数据不持久 → 需要挂载 volume
+- Python 3.12 与部分依赖不兼容 → 退回 3.11
+
+## 我学到了什么
+
+- Docker volume 挂载的 uid/gid 问题在 Linux 上很常见，Windows 上反而没问题
+- FastAPI 的依赖注入系统比 Flask 优雅很多
