@@ -124,3 +124,83 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Prose · MDX 正文排版作用域
+   每个 .prose-tb 容器独立计数（复盘五维度 / 踩坑六段 均为固定序列）
+   ============================================================ */
+.prose-tb {
+  counter-reset: tb-section;
+}
+.prose-tb .tb-h2::before {
+  content: counter(tb-section, decimal-leading-zero);
+  counter-increment: tb-section;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tb-primary);
+  margin-right: 12px;
+  letter-spacing: 0.04em;
+}
+/* 签名引用块（理解验证 / 根因分析）的引号字符 */
+.prose-tb .tb-quote-mark::before {
+  content: "❝";
+  position: absolute;
+  top: 10px;
+  right: 16px;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--tb-primary);
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/* ---- 列表标记：无序用琥珀破折号，有序用等宽编号 ---- */
+.prose-tb .tb-ul > li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-weight: 600;
+  color: var(--tb-primary);
+}
+.prose-tb .tb-ol {
+  counter-reset: tb-ol;
+}
+.prose-tb .tb-ol > li {
+  counter-increment: tb-ol;
+}
+.prose-tb .tb-ol > li::before {
+  content: counter(tb-ol, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--tb-primary);
+  letter-spacing: 0.02em;
+}
+
+/* ---- 代码：行内 code 用琥珀药丸，块级 code 还原为纯文本 ---- */
+.prose-tb :not(pre) > code {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.9em;
+  color: var(--tb-primary-strong);
+  background: var(--tb-bg-sunken);
+  border: 1px solid var(--tb-border);
+  border-radius: var(--tb-radius-small);
+  padding: 1px 6px;
+  white-space: nowrap;
+}
+.prose-tb pre code {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  white-space: pre;
+}

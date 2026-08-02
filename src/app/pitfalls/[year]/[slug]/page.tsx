@@ -101,7 +101,7 @@ export default async function PitfallDetailPage({
           </div>
 
           {/* Content (MDX rendered) */}
-          <article>
+          <article className="prose-tb">
             <MDXRemote
               source={pitfall.content}
               components={mdxComponents}

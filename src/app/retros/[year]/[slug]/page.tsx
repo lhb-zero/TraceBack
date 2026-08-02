@@ -151,7 +151,7 @@ export default async function RetroDetailPage({
                       <span className="text-[15px] font-semibold text-foreground">{ms.frontmatter.title}</span>
                       <span className="ml-auto font-mono text-xs text-subtle">{ms.frontmatter.date}</span>
                     </div>
-                    <div className="border-t border-border pt-4">
+                    <div className="prose-tb border-t border-border pt-4">
                       <MDXRemote
                         source={ms.content}
                         components={mdxComponents}
