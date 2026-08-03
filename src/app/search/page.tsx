@@ -137,7 +137,7 @@ export default function SearchPage() {
                 className={`block rounded-md border border-border bg-surface px-6 py-4 no-underline transition-colors hover:border-border-strong hover:bg-surface-2 ${
                   entry.type === "retro"
                     ? "border-l-[3px] border-l-primary"
-                    : "border-l-[3px] border-l-state-warning"
+                    : "border-l-[3px] border-l-pitfall"
                 }`}
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
@@ -146,8 +146,8 @@ export default function SearchPage() {
                       <span className="h-1.5 w-1.5 rounded-full bg-primary" />复盘
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-[5px] rounded-sm border border-[rgba(217,130,58,0.30)] bg-[var(--tb-warning-tint)] px-[9px] py-1 font-mono text-xs font-medium text-state-warning">
-                      <span className="h-1.5 w-1.5 rounded-full bg-state-warning" />踩坑
+                    <span className="inline-flex items-center gap-[5px] rounded-sm border border-pitfall/30 bg-[var(--tb-pitfall-tint)] px-[9px] py-1 font-mono text-xs font-medium text-pitfall">
+                      <span className="h-1.5 w-1.5 rounded-full bg-pitfall" />踩坑
                     </span>
                   )}
                   <span className="font-mono text-xs text-subtle">{entry.date}</span>

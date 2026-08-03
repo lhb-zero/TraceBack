@@ -55,6 +55,10 @@
   /* ---- 布局 ---- */
   --tb-content-max: 900px;
   --tb-content-wide: 1040px;
+
+  /* ---- 内容类型色（复盘=品牌琥珀，踩坑=问题红） ---- */
+  --tb-pitfall: var(--tb-state-error);
+  --tb-pitfall-tint: var(--tb-error-tint);
 }
 
 @theme inline {
@@ -76,6 +80,8 @@
   --color-state-warning: var(--tb-state-warning);
   --color-state-error: var(--tb-state-error);
   --color-state-neutral: var(--tb-state-neutral);
+  --color-pitfall: var(--tb-pitfall);
+  --color-pitfall-tint: var(--tb-pitfall-tint);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --radius-sm: var(--tb-radius-small);

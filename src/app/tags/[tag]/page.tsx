@@ -80,7 +80,7 @@ export default async function TagDetailPage({
                   <Link
                     key={`${p.year}/${p.slug}`}
                     href={`/pitfalls/${p.year}/${p.slug}`}
-                    className="block rounded-lg border border-border border-l-[3px] border-l-state-warning bg-surface p-5 no-underline transition-all duration-150 hover:-translate-y-0.5 hover:border-border-strong"
+                    className="block rounded-lg border border-border border-l-[3px] border-l-pitfall bg-surface p-5 no-underline transition-all duration-150 hover:-translate-y-0.5 hover:border-border-strong"
                   >
                     <div className="mb-2 flex flex-wrap items-center gap-3">
                       <span className="text-[17px] font-semibold text-foreground">{p.frontmatter.title}</span>

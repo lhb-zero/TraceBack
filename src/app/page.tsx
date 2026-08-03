@@ -192,8 +192,8 @@ export default function Home() {
                               <span className="h-1.5 w-1.5 rounded-full bg-primary" />复盘
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-[5px] rounded-sm border border-[rgba(217,130,58,0.30)] bg-[var(--tb-warning-tint)] px-[9px] py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.03em] text-state-warning">
-                              <span className="h-1.5 w-1.5 rounded-full bg-state-warning" />踩坑
+                            <span className="inline-flex items-center gap-[5px] rounded-sm border border-pitfall/30 bg-[var(--tb-pitfall-tint)] px-[9px] py-1 font-mono text-[11px] font-semibold uppercase tracking-[0.03em] text-pitfall">
+                              <span className="h-1.5 w-1.5 rounded-full bg-pitfall" />踩坑
                             </span>
                           )}
                           <span className="text-[17px] font-semibold text-foreground">
