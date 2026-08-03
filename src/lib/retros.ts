@@ -128,11 +128,14 @@ export function getAllRetroProjects(): RetroProject[] {
   );
 }
 
-// Get projects pending review (review_after <= today)
+// Get projects pending review (review_after <= today, not yet reviewed)
 export function getPendingReviewProjects(): RetroProject[] {
   const today = new Date().toISOString().split("T")[0];
   return getAllRetroProjects().filter(
-    (p) => p.frontmatter.review_after && p.frontmatter.review_after <= today
+    (p) =>
+      p.frontmatter.review_after &&
+      p.frontmatter.review_after <= today &&
+      p.frontmatter.review_status !== "reviewed"
   );
 }
 

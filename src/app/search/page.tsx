@@ -20,16 +20,66 @@ interface SearchEntry {
   resolved?: boolean;
 }
 
+// Search history: stored in localStorage (client-only browsing data)
+interface SearchHistoryItem {
+  q: string; // query keyword
+  t: number; // last searched timestamp
+  n: number; // result count at that time
+}
+
+const HISTORY_KEY = "traceback-search-history";
+const HISTORY_MAX = 20;
+
+function loadHistory(): SearchHistoryItem[] {
+  try {
+    const raw = localStorage.getItem(HISTORY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter(
+      (i): i is SearchHistoryItem =>
+        i && typeof i.q === "string" && typeof i.t === "number" && typeof i.n === "number"
+    );
+  } catch {
+    return [];
+  }
+}
+
+function saveHistory(items: SearchHistoryItem[]) {
+  try {
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(items));
+  } catch {
+    // Ignore (e.g. private mode storage unavailable)
+  }
+}
+
+function relativeTime(ts: number): string {
+  const diff = Date.now() - ts;
+  const min = Math.floor(diff / 60000);
+  if (min < 1) return "刚刚";
+  if (min < 60) return `${min} 分钟前`;
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return `${hr} 小时前`;
+  const day = Math.floor(hr / 24);
+  if (day < 30) return `${day} 天前`;
+  return new Date(ts).toLocaleDateString("zh-CN");
+}
+
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "retro" | "pitfall">("all");
   const [index, setIndex] = useState<SearchEntry[]>([]);
+  const [history, setHistory] = useState<SearchHistoryItem[]>([]);
 
   useEffect(() => {
     fetch("/search-index.json")
       .then((res) => res.json())
       .then((data) => setIndex(data))
       .catch(() => setIndex([]));
+  }, []);
+
+  useEffect(() => {
+    setHistory(loadHistory());
   }, []);
 
   const fuse = useMemo(
@@ -53,6 +103,47 @@ export default function SearchPage() {
     if (filter === "all") return raw;
     return raw.filter((item) => item.type === filter);
   }, [query, filter, fuse]);
+
+  // Record a search into history (dedupe + move to front + refresh timestamp/count)
+  const commitSearch = (term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed) return;
+    const count = fuse.search(trimmed).length;
+    setHistory((prev) => {
+      const next = [
+        { q: trimmed, t: Date.now(), n: count },
+        ...prev.filter((i) => i.q !== trimmed),
+      ].slice(0, HISTORY_MAX);
+      saveHistory(next);
+      return next;
+    });
+  };
+
+  // Click a history item: backfill query + search again + refresh its position
+  const applyHistory = (item: SearchHistoryItem) => {
+    setQuery(item.q);
+    setHistory((prev) => {
+      const next = [
+        { ...item, t: Date.now() },
+        ...prev.filter((i) => i.q !== item.q),
+      ].slice(0, HISTORY_MAX);
+      saveHistory(next);
+      return next;
+    });
+  };
+
+  const removeHistory = (q: string) => {
+    setHistory((prev) => {
+      const next = prev.filter((i) => i.q !== q);
+      saveHistory(next);
+      return next;
+    });
+  };
+
+  const clearHistory = () => {
+    setHistory([]);
+    saveHistory([]);
+  };
 
   const href = (entry: SearchEntry) => {
     if (entry.type === "retro") {
@@ -91,6 +182,9 @@ export default function SearchPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") commitSearch(query);
+              }}
               placeholder="输入关键词搜索..."
               autoFocus
               className="w-full rounded-md border border-border bg-surface py-3 pl-12 pr-14 text-base text-foreground outline-none transition-all placeholder:text-subtle focus:border-primary focus:shadow-[0_0_0_3px_var(--tb-primary-tint)]"
@@ -119,6 +213,70 @@ export default function SearchPage() {
               )
             )}
           </div>
+
+          {/* Search history (visible when input is empty) */}
+          {!query.trim() && history.length > 0 && (
+            <section className="mt-6">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-subtle">
+                  最近搜索
+                </span>
+                <button
+                  type="button"
+                  onClick={clearHistory}
+                  className="rounded-sm px-2 py-0.5 font-mono text-xs text-subtle transition-colors hover:text-foreground"
+                >
+                  清空
+                </button>
+              </div>
+              <ul className="overflow-hidden rounded-md border border-border bg-surface">
+                {history.map((item) => (
+                  <li
+                    key={item.q}
+                    className="flex items-center gap-2 border-b border-border last:border-b-0"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => applyHistory(item)}
+                      className="flex flex-1 items-center gap-2.5 px-4 py-2.5 text-left transition-colors hover:bg-surface-2"
+                    >
+                      <svg
+                        className="shrink-0 text-subtle"
+                        width="14"
+                        height="14"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="M12 6v6l4 2" />
+                      </svg>
+                      <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-foreground">
+                        {item.q}
+                      </span>
+                      {item.n === 0 && (
+                        <span className="shrink-0 font-mono text-xs text-state-warning">无结果</span>
+                      )}
+                      <span className="shrink-0 font-mono text-xs text-subtle">
+                        {relativeTime(item.t)}
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => removeHistory(item.q)}
+                      aria-label={`删除搜索记录 ${item.q}`}
+                      className="mr-3 shrink-0 rounded-sm px-1.5 py-0.5 font-mono text-sm text-subtle transition-colors hover:bg-sunken hover:text-foreground"
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           {/* Results meta */}
           {query.trim() && (

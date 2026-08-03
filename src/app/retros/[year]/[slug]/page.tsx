@@ -108,6 +108,7 @@ export default async function RetroDetailPage({
               initialScore={fm.understanding_score ?? null}
               initialStatus={fm.status}
               initialReviewStatus={fm.review_status ?? null}
+              initialReviewAfter={fm.review_after ?? null}
             />
           </div>
 

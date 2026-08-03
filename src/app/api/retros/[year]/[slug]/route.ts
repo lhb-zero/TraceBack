@@ -54,6 +54,21 @@ export async function PATCH(
         { status: 400 }
       );
     }
+    // Marking reviewed closes the loop: force-clear review_after
+    if (rs === "reviewed") {
+      updates.review_after = null;
+    }
+  }
+
+  // Validate review_after format (YYYY-MM-DD or null)
+  if ("review_after" in updates) {
+    const ra = updates.review_after;
+    if (ra !== null && (typeof ra !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(ra))) {
+      return NextResponse.json(
+        { error: "review_after must be null or a date in YYYY-MM-DD format" },
+        { status: 400 }
+      );
+    }
   }
 
   const relativePath = `retros/${year}/${slug}/index.mdx`;

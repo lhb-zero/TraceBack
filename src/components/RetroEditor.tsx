@@ -11,6 +11,7 @@ interface Props {
   initialScore: number | null;
   initialStatus: string;
   initialReviewStatus: ReviewStatus;
+  initialReviewAfter: string | null;
 }
 
 const REVIEW_OPTIONS: { key: NonNullable<ReviewStatus>; label: string }[] = [
@@ -25,12 +26,14 @@ export default function RetroEditor({
   initialScore,
   initialStatus,
   initialReviewStatus,
+  initialReviewAfter,
 }: Props) {
   const router = useRouter();
 
   const [score, setScore] = useState<number | null>(initialScore);
   const [status, setStatus] = useState(initialStatus);
   const [reviewStatus, setReviewStatus] = useState<ReviewStatus>(initialReviewStatus);
+  const [reviewAfter, setReviewAfter] = useState<string | null>(initialReviewAfter);
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,7 +42,8 @@ export default function RetroEditor({
   const isDirty =
     score !== initialScore ||
     status !== initialStatus ||
-    reviewStatus !== initialReviewStatus;
+    reviewStatus !== initialReviewStatus ||
+    reviewAfter !== initialReviewAfter;
 
   const handleConfirm = async () => {
     if (!isDirty || saving) return;
@@ -55,6 +59,7 @@ export default function RetroEditor({
           understanding_score: score,
           status,
           review_status: reviewStatus,
+          review_after: reviewAfter,
         }),
       });
 
@@ -146,7 +151,12 @@ export default function RetroEditor({
               <button
                 key={key}
                 type="button"
-                onClick={() => setReviewStatus(reviewStatus === key ? null : key)}
+                onClick={() => {
+                  const next = reviewStatus === key ? null : key;
+                  setReviewStatus(next);
+                  // Marking reviewed closes the loop: clear the review date
+                  if (next === "reviewed") setReviewAfter(null);
+                }}
                 className={`rounded-sm px-2.5 py-1 font-mono text-xs font-medium transition-colors ${
                   reviewStatus === key
                     ? key === "reviewed"
@@ -160,6 +170,36 @@ export default function RetroEditor({
                 {label}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Review date (review_after) */}
+        <div className="flex flex-col gap-[7px]">
+          <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-subtle">
+            回顾日期
+          </span>
+          <div className="flex items-center gap-1.5">
+            <input
+              type="date"
+              value={reviewAfter ?? ""}
+              onChange={(e) => {
+                setReviewAfter(e.target.value || null);
+                // Setting a new date re-opens the review loop
+                if (reviewStatus === "reviewed") setReviewStatus("pending");
+              }}
+              className="rounded-sm border border-border bg-sunken px-2.5 py-1 font-mono text-[13px] text-foreground outline-none transition-colors hover:border-border-strong focus:border-primary"
+              style={{ colorScheme: "dark" }}
+              aria-label="回顾日期"
+            />
+            {reviewAfter && (
+              <button
+                type="button"
+                onClick={() => setReviewAfter(null)}
+                className="rounded-sm border border-border bg-sunken px-2 py-1 font-mono text-xs text-muted transition-colors hover:border-border-strong hover:text-foreground"
+              >
+                清除
+              </button>
+            )}
           </div>
         </div>
 

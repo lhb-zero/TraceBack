@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const navItems = [
   { href: "/", label: "首页", key: "home" },
@@ -8,6 +12,29 @@ const navItems = [
 ];
 
 export default function TopNav({ activeKey }: { activeKey?: string }) {
+  const router = useRouter();
+
+  // Global "/" shortcut: jump to search from any page, focus input when already there
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const el = document.activeElement;
+      const typing =
+        el instanceof HTMLInputElement ||
+        el instanceof HTMLTextAreaElement ||
+        (el instanceof HTMLElement && el.isContentEditable);
+      if (e.key !== "/" || typing) return;
+      e.preventDefault();
+      if (window.location.pathname === "/search") {
+        const input = document.querySelector<HTMLInputElement>('input[placeholder^="输入关键词"]');
+        input?.focus();
+      } else {
+        router.push("/search");
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [router]);
+
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/82 backdrop-blur-[12px]">
       <div className="mx-auto flex h-[60px] max-w-[1040px] items-center gap-6 px-6">
