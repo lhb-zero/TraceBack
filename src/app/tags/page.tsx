@@ -32,14 +32,15 @@ export default function TagsPage() {
                 const fontWeight = scale > 0.6 ? 700 : scale > 0.3 ? 600 : 500;
 
                 return (
-                  <span
+                  <Link
                     key={tag.name}
-                    className="inline-flex cursor-default items-center rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-muted transition-colors hover:border-[rgba(224,168,81,0.4)] hover:bg-[var(--tb-primary-tint)] hover:text-primary"
+                    href={`/tags/${encodeURIComponent(tag.name)}`}
+                    className="inline-flex items-center rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-muted no-underline transition-colors hover:border-[rgba(224,168,81,0.4)] hover:bg-[var(--tb-primary-tint)] hover:text-primary"
                     style={{ fontSize: `${fontSize}px`, fontWeight }}
                   >
                     {tag.name}
                     <span className="ml-1 text-xs text-subtle">({tag.count})</span>
-                  </span>
+                  </Link>
                 );
               })}
             </div>
@@ -50,9 +51,10 @@ export default function TagsPage() {
             <h2 className="mb-4 text-[22px] font-bold tracking-[-0.015em]">详细统计</h2>
             <div className="space-y-2">
               {tags.map((tag) => (
-                <div
+                <Link
                   key={tag.name}
-                  className="flex items-center gap-4 rounded-md border border-border bg-surface px-5 py-3"
+                  href={`/tags/${encodeURIComponent(tag.name)}`}
+                  className="flex items-center gap-4 rounded-md border border-border bg-surface px-5 py-3 no-underline transition-colors hover:border-border-strong hover:bg-surface-2"
                 >
                   <span className="flex-1 font-mono text-[13px] font-semibold text-foreground">
                     {tag.name}
@@ -63,7 +65,7 @@ export default function TagsPage() {
                   <span className="font-mono text-[13px] font-bold text-primary">
                     {tag.count}
                   </span>
-                </div>
+                </Link>
               ))}
             </div>
           </section>
