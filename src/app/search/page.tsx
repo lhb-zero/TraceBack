@@ -134,16 +134,20 @@ export default function SearchPage() {
               <Link
                 key={`${entry.type}-${entry.slug}-${i}`}
                 href={href(entry)}
-                className="block rounded-md border border-border bg-surface px-6 py-4 no-underline transition-colors hover:border-border-strong hover:bg-surface-2"
+                className={`block rounded-md border border-border bg-surface px-6 py-4 no-underline transition-colors hover:border-border-strong hover:bg-surface-2 ${
+                  entry.type === "retro"
+                    ? "border-l-[3px] border-l-primary"
+                    : "border-l-[3px] border-l-state-warning"
+                }`}
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
                   {entry.type === "retro" ? (
                     <span className="inline-flex items-center gap-[5px] rounded-sm border border-[rgba(224,168,81,0.28)] bg-[var(--tb-primary-tint)] px-[9px] py-1 font-mono text-xs font-medium text-primary">
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />PROJECT
+                      <span className="h-1.5 w-1.5 rounded-full bg-primary" />复盘
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-[5px] rounded-sm border border-[rgba(217,130,58,0.30)] bg-[var(--tb-warning-tint)] px-[9px] py-1 font-mono text-xs font-medium text-state-warning">
-                      <span className="h-1.5 w-1.5 rounded-full bg-state-warning" />PITFALL
+                      <span className="h-1.5 w-1.5 rounded-full bg-state-warning" />踩坑
                     </span>
                   )}
                   <span className="font-mono text-xs text-subtle">{entry.date}</span>

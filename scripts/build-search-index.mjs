@@ -28,6 +28,13 @@ function stripMarkdown(content) {
     .trim();
 }
 
+// Normalize gray-matter Date objects / ISO strings to YYYY-MM-DD
+function fmtDate(d) {
+  if (d instanceof Date) return d.toISOString().split("T")[0];
+  if (typeof d === "string" && d) return d.slice(0, 10);
+  return "";
+}
+
 // Collect all retro projects
 function collectRetros() {
   const retrosDir = path.join(CONTENT_DIR, "retros");
@@ -62,7 +69,7 @@ function collectRetros() {
         summary: data.summary || "",
         tags: data.tags || [],
         content: stripMarkdown(content).slice(0, 2000),
-        date: data.date || "",
+        date: fmtDate(data.date),
         status: data.status || "",
       });
 
@@ -81,7 +88,7 @@ function collectRetros() {
             summary: logData.title || "",
             tags: logData.tags || data.tags || [],
             content: stripMarkdown(logContent).slice(0, 1500),
-            date: logData.date || "",
+            date: fmtDate(logData.date),
             status: data.status || "",
           });
         }
@@ -121,7 +128,7 @@ function collectPitfalls() {
         summary: data.title || "",
         tags: data.tags || [],
         content: stripMarkdown(content).slice(0, 2000),
-        date: data.date || "",
+        date: fmtDate(data.date),
         severity: data.severity || "",
         resolved: data.resolved ?? true,
       });

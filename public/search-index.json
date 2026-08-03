@@ -13,7 +13,7 @@
       "fastapi"
     ],
     "content": "项目概述\r\n\r\n为公司内部搭建基于企业文档的智能客服系统。用户上传 PDF/Markdown 文档后，系统能对员工提问进行精准回答。最终实现了 85% 的问题命中率，部署在内部服务器供 50+ 人使用。\r\n\r\n技术要点\r\n\r\n- 向量数据库选型：选择 ChromaDB 而非 Pinecone，因为是内部部署、数据量不大（<10万条），ChromaDB 零运维成本\r\n- Chunk 策略：从固定 512 token 切分改为按段落语义切分 + 重叠窗口，召回率提升约 20%\r\n- 检索增强：引入 Hybrid Search（向量 + BM25 关键词），解决纯向量检索对专有名词不敏感的问题\r\n- Prompt 工程：设计了 system prompt 模板，强制模型在回答时引用来源文档段落\r\n\r\nAI 协作记录\r\n\r\n- AI 生成了基础的 LangChain chain 代码框架，我在此基础上重写了 retriever 部分（因为默认的 similarity search 不满足需求）\r\n- Prompt 模板的初版由 AI 生成，但发现模型经常\"编造\"不存在的文档内容，我增加了\"如果上下文中没有相关信息，明确说不知道\"的约束\r\n- 理解验证：RAG 的核心不是\"让模型更聪明\"，而是\"给模型正确的上下文\"。检索质量决定了上限，模型能力只决定表达质量\r\n\r\n踩坑与解决\r\n\r\n- ChromaDB 持久化路径在 Docker 中权限报错 → 挂载 volume 时指定 uid\r\n- LangChain 0.1 → 0.2 升级后 Memory 接口完全不兼容 → 锁定版本，写迁移脚本\r\n- 中文文档 chunk 后语义碎片化严重 → 改用 jieba 分词辅助断句\r\n\r\n我学到了什么\r\n\r\n- RAG 系统 80% 的功夫在检索侧（chunk、embedding、检索策略），而非生成侧\r\n- \"先评估再优化\"比\"凭感觉调参\"效率高 10 倍，接入 Ragas 评估框架后优化方向一目了然\r\n- LangChain 的抽象层在快速原型时有用，但生产环境需要理解底层逻辑才能调优",
-    "date": "2026-07-28T00:00:00.000Z",
+    "date": "2026-07-28",
     "status": "completed"
   },
   {
@@ -28,7 +28,7 @@
       "docker"
     ],
     "content": "阶段概述\r\n\r\n完成项目基础框架搭建：FastAPI 后端服务 + ChromaDB 向量存储 + Docker 容器化部署环境。实现了文档上传接口和基础的文本切分管道。\r\n\r\n技术要点\r\n\r\n- FastAPI 作为后端框架，异步支持好、自带 OpenAPI 文档\r\n- Docker Compose 编排：app + chromadb 两个服务\r\n- 文本切分初版用 LangChain 的 RecursiveCharacterTextSplitter，chunksize=512\r\n\r\nAI 协作记录\r\n\r\n- AI 生成了 FastAPI 项目骨架和 Docker 配置，基本可以直接用\r\n- 我修改了 CORS 配置和文件上传的大小限制（默认 1MB 太小）\r\n\r\n踩坑与解决\r\n\r\n- Docker 内 ChromaDB 数据不持久 → 需要挂载 volume\r\n- Python 3.12 与部分依赖不兼容 → 退回 3.11\r\n\r\n我学到了什么\r\n\r\n- Docker volume 挂载的 uid/gid 问题在 Linux 上很常见，Windows 上反而没问题\r\n- FastAPI 的依赖注入系统比 Flask 优雅很多",
-    "date": "2026-06-15T00:00:00.000Z",
+    "date": "2026-06-15",
     "status": "completed"
   },
   {
@@ -43,7 +43,7 @@
       "权限问题"
     ],
     "content": "问题现象\r\n\r\nDocker 容器启动后，ChromaDB 初始化报错：\r\n\r\n容器内  目录存在但无法写入。\r\n\r\n环境\r\n\r\n- OS: Ubuntu 22.04 (服务器)\r\n- Docker: 24.0\r\n- ChromaDB: 0.4.22\r\n- Python: 3.11\r\n\r\n排查过程\r\n\r\n1. 进入容器检查目录权限： → 属主是 root，但进程以非 root 用户运行\r\n2. 尝试  → 临时解决但重启后失效\r\n3. 检查 Dockerfile → 基础镜像默认用户非 root\r\n\r\n根因\r\n\r\nDocker volume 挂载时，宿主机目录的 uid/gid 与容器内进程用户不匹配。ChromaDB 底层用 SQLite，需要目录写权限。\r\n\r\n解决方案\r\n\r\n在 docker-compose.yml 中指定用户：\r\n\r\n\r\n或在 Dockerfile 中：\r\n\r\n\r\n预防/备忘\r\n\r\n- 凡是用 SQLite/文件存储的组件，Docker 部署时都要注意 uid 映射\r\n- 开发环境（Windows/Mac）通常没这个问题，Linux 服务器才会触发\r\n- 快速验证： 确认运行用户",
-    "date": "2026-06-16T00:00:00.000Z",
+    "date": "2026-06-16",
     "severity": "medium",
     "resolved": true
   },
@@ -59,7 +59,7 @@
       "版本兼容"
     ],
     "content": "问题现象\r\n\r\n升级 LangChain 从 0.1.x 到 0.2.x 后，项目启动直接报错：\r\n\r\n所有用到 Memory 的 chain 全部崩溃。\r\n\r\n环境\r\n\r\n- Python: 3.11\r\n- LangChain: 0.1.16 → 0.2.5\r\n- langchain-community: 未安装（0.2 后拆分了）\r\n\r\n排查过程\r\n\r\n1. 查 changelog → 发现 0.2 大版本把 memory 模块整体迁移到了  独立包\r\n2. 安装  后 import 路径变了\r\n3. 进一步发现  也被标记为 deprecated，推荐用 LCEL\r\n\r\n根因\r\n\r\nLangChain 0.2 是一次破坏性重构：\r\n- memory 相关类移到独立包 \r\n- 旧的  被废弃\r\n- 很多 import 路径从  变为  或 \r\n\r\n解决方案\r\n\r\n最终决定不升级，锁定版本：\r\n\r\n\r\n同时写了一个迁移检查脚本，列出所有需要修改的 import：\r\n\r\n\r\n等后续有时间再整体迁移到 LCEL 架构。\r\n\r\n预防/备忘\r\n\r\n- LangChain 大版本升级一定是破坏性的，永远不要  不锁版本\r\n- 生产项目 requirements.txt 必须锁死版本号（用  而非 ）\r\n- 升级前先看 migration guide：https://python.langchain.com/docs/changelog/\r\n- 考虑用  或  锁定完整依赖树",
-    "date": "2026-07-05T00:00:00.000Z",
+    "date": "2026-07-05",
     "severity": "high",
     "resolved": true
   }
