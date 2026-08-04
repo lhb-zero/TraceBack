@@ -97,8 +97,11 @@
   --color-float-text: var(--tb-float-text);
   --color-float-muted: var(--tb-float-muted);
   --color-float-subtle: var(--tb-float-subtle);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* 系统字体栈：零网络依赖（不用 next/font/google，避免构建联网拉字体失败） */
+  --font-sans: -apple-system, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono",
+    "Fira Code", Consolas, "Courier New", monospace;
   --radius-sm: var(--tb-radius-small);
   --radius-md: var(--tb-radius-medium);
   --radius-lg: var(--tb-radius-large);
