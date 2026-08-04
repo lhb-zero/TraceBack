@@ -125,12 +125,15 @@ function collectPitfalls() {
         slug,
         year,
         title: data.title || slug,
-        summary: data.title || "",
+        // Pitfall frontmatter has no summary field; derive a short preview
+        // from the stripped body so search cards don't repeat the title.
+        summary: stripMarkdown(content).slice(0, 160),
         tags: data.tags || [],
         content: stripMarkdown(content).slice(0, 2000),
         date: fmtDate(data.date),
         severity: data.severity || "",
-        resolved: data.resolved ?? true,
+        // Match page behavior: a missing `resolved` field renders as "未解决"
+        resolved: data.resolved ?? false,
       });
     }
   }

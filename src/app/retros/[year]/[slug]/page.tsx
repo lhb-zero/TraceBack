@@ -60,11 +60,18 @@ export default async function RetroDetailPage({
             <h1 className="mb-4 text-[30px] font-bold leading-[1.2] tracking-[-0.02em]">{fm.title}</h1>
             <div className="mb-6 flex flex-wrap gap-2">
               {fm.tags.map((tag) => (
-                <Link key={tag} href={`/tags`} className="rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-xs font-medium text-muted no-underline transition-colors hover:border-[rgba(224,168,81,0.4)] hover:bg-[var(--tb-primary-tint)] hover:text-primary">
+                <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`} className="rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-xs font-medium text-muted no-underline transition-colors hover:border-[rgba(224,168,81,0.4)] hover:bg-[var(--tb-primary-tint)] hover:text-primary">
                   {tag}
                 </Link>
               ))}
             </div>
+
+            {/* Highlight (key takeaway) */}
+            {fm.highlight && (
+              <p className="mb-6 rounded-md border border-primary/30 border-l-2 border-l-primary bg-[var(--tb-primary-tint)] px-4 py-3 font-mono text-[13px] leading-[1.8] text-primary-strong">
+                ◆ {fm.highlight}
+              </p>
+            )}
 
             {/* Meta grid */}
             <div className="grid gap-4 rounded-lg border border-border bg-surface p-6 [grid-template-columns:repeat(auto-fit,minmax(190px,1fr))]">
@@ -123,9 +130,13 @@ export default async function RetroDetailPage({
                 index.mdx
               </span>
               {project.subDocs.map((doc) => (
-                <span key={doc.file} className="rounded-sm px-3 py-1.5 font-mono text-[13px] font-medium text-muted transition-colors hover:bg-surface-2 hover:text-foreground">
+                <a
+                  key={doc.file}
+                  href={`#sub-${encodeURIComponent(doc.file)}`}
+                  className="rounded-sm px-3 py-1.5 font-mono text-[13px] font-medium text-muted no-underline transition-colors hover:bg-surface-2 hover:text-primary"
+                >
                   {doc.file}
-                </span>
+                </a>
               ))}
               {project.milestones.length > 0 && (
                 <span className="ml-auto pr-1 font-mono text-[11px] text-subtle">
@@ -168,6 +179,31 @@ export default async function RetroDetailPage({
             />
           </article>
 
+          {/* Sub-documents (optional deep dives: decisions / ai-collaboration) */}
+          {project.subDocs.length > 0 && (
+            <div className="mt-12 space-y-12">
+              {project.subDocs.map((doc) => (
+                <section
+                  key={doc.file}
+                  id={`sub-${encodeURIComponent(doc.file)}`}
+                  className="scroll-mt-[120px] border-t border-border pt-8"
+                >
+                  <div className="mb-4 flex items-baseline gap-3">
+                    <h2 className="text-[22px] font-bold tracking-[-0.015em]">{doc.title}</h2>
+                    <span className="font-mono text-xs text-subtle">{doc.file}</span>
+                  </div>
+                  <article className="prose-tb">
+                    <MDXRemote
+                      source={doc.content}
+                      components={mdxComponents}
+                      options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+                    />
+                  </article>
+                </section>
+              ))}
+            </div>
+          )}
+
           {/* Milestones */}
           {project.milestones.length > 0 && (
             <section className="mt-12 border-t border-border pt-8">
@@ -205,6 +241,28 @@ export default async function RetroDetailPage({
                     <span className="font-mono text-[13px] font-semibold text-primary">{commit.hash}</span>
                     <span className="text-sm text-foreground">{commit.note}</span>
                   </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* Pull requests */}
+          {fm.prs && fm.prs.length > 0 && (
+            <section className="mt-12">
+              <h3 className="mb-4 text-[17px] font-semibold">Pull Requests</h3>
+              <div className="space-y-2">
+                {fm.prs.map((pr, i) => (
+                  <a
+                    key={i}
+                    href={pr}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 rounded-md border border-border bg-surface px-5 py-3 font-mono text-[13px] text-muted no-underline transition-colors hover:border-border-strong hover:text-foreground"
+                  >
+                    <svg className="shrink-0 text-subtle" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M6 21V9" /><path d="m6 9 12 9" /></svg>
+                    <span className="truncate">{pr}</span>
+                    <span className="ml-auto shrink-0 text-primary">↗</span>
+                  </a>
                 ))}
               </div>
             </section>

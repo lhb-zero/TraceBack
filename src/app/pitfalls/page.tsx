@@ -8,6 +8,9 @@ export default function PitfallsPage() {
   const resolved = pitfalls.filter((p) => p.frontmatter.resolved).length;
   const unsolved = pitfalls.length - resolved;
 
+  const severityLabel = (s?: string) =>
+    s === "high" ? "严重" : s === "medium" ? "中等" : s === "low" ? "轻微" : s;
+
   return (
     <>
       <TopNav activeKey="pitfalls" />
@@ -56,7 +59,7 @@ export default function PitfallsPage() {
                           ? "border-[rgba(217,130,58,0.30)] bg-[var(--tb-warning-tint)] text-state-warning"
                           : "border-[rgba(107,116,132,0.30)] bg-[var(--tb-neutral-tint)] text-state-neutral"
                     }`}>
-                      {pitfall.frontmatter.severity}
+                      {severityLabel(pitfall.frontmatter.severity)}
                     </span>
                   )}
                   <span className="ml-auto font-mono text-xs text-subtle">{pitfall.frontmatter.date}</span>

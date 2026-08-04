@@ -1,16 +1,31 @@
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
-import { getAllRetroProjects, getPendingReviewProjects } from "@/lib/retros";
+import { getAllRetroProjects } from "@/lib/retros";
 import { getAllPitfalls } from "@/lib/pitfalls";
-import { getDashboardStats, getAllTags } from "@/lib/utils";
+import { getAllTags } from "@/lib/utils";
 
 export default function Home() {
-  const stats = getDashboardStats();
+  // Read content once and derive stats/pending in memory (avoids re-reading
+  // every MDX file multiple times per request).
   const projects = getAllRetroProjects();
   const pitfalls = getAllPitfalls();
-  const pendingReview = getPendingReviewProjects();
   const tags = getAllTags();
+  const today = new Date().toISOString().split("T")[0];
+  const pendingReview = projects.filter(
+    (p) =>
+      p.frontmatter.review_after &&
+      p.frontmatter.review_after <= today &&
+      p.frontmatter.review_status !== "reviewed"
+  );
+  const stats = {
+    totalProjects: projects.length,
+    ongoing: projects.filter((p) => p.frontmatter.status === "ongoing").length,
+    completed: projects.filter((p) => p.frontmatter.status === "completed").length,
+    abandoned: projects.filter((p) => p.frontmatter.status === "abandoned").length,
+    totalPitfalls: pitfalls.length,
+    pendingReview: pendingReview.length,
+  };
 
   // Merge projects and pitfalls into a unified timeline
   type TimelineEntry = {

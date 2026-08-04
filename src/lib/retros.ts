@@ -168,3 +168,20 @@ export function getAllRetroSlugs(): { year: string; slug: string }[] {
 
   return slugs;
 }
+
+// Find a retro project by its slug across all years (for cross-links
+// from pitfalls' `related_project`, which only stores the slug).
+export function findRetroBySlug(
+  slug: string
+): { year: string; slug: string; title: string; date: string } | null {
+  const hit = getAllRetroSlugs().find((s) => s.slug === slug);
+  if (!hit) return null;
+  const project = getRetroProject(hit.year, hit.slug);
+  if (!project) return null;
+  return {
+    year: hit.year,
+    slug: hit.slug,
+    title: project.frontmatter.title,
+    date: project.frontmatter.date,
+  };
+}

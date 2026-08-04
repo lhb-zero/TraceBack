@@ -7,6 +7,7 @@ import PitfallEditor from "@/components/PitfallEditor";
 import { mdxComponents } from "@/components/MDXComponents";
 import FloatingToc from "@/components/FloatingToc";
 import { getPitfall, getAllPitfallSlugs } from "@/lib/pitfalls";
+import { findRetroBySlug } from "@/lib/retros";
 import { extractHeadings, headingId } from "@/lib/headings";
 
 export function generateStaticParams() {
@@ -24,6 +25,7 @@ export default async function PitfallDetailPage({
 
   const fm = pitfall.frontmatter;
   const headings = extractHeadings(pitfall.content);
+  const relatedRetro = fm.related_project ? findRetroBySlug(fm.related_project) : null;
 
   return (
     <>
@@ -68,9 +70,9 @@ export default async function PitfallDetailPage({
 
             <div className="mb-6 flex flex-wrap gap-2">
               {fm.tags.map((tag) => (
-                <span key={tag} className="rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-xs font-medium text-muted">
+                <Link key={tag} href={`/tags/${encodeURIComponent(tag)}`} className="rounded-sm border border-border bg-surface px-2 py-0.5 font-mono text-xs font-medium text-muted no-underline transition-colors hover:border-pitfall/40 hover:bg-[var(--tb-pitfall-tint)] hover:text-pitfall">
                   {tag}
-                </span>
+                </Link>
               ))}
             </div>
 
@@ -137,12 +139,23 @@ export default async function PitfallDetailPage({
           </article>
 
           {/* Related project link */}
-          {fm.related_project && (
+          {relatedRetro && (
             <section className="mt-12 border-t border-border pt-8">
               <h3 className="mb-4 text-[17px] font-semibold">相关复盘</h3>
-              <p className="font-mono text-[13px] text-muted">
-                项目: {fm.related_project}
-              </p>
+              <Link
+                href={`/retros/${relatedRetro.year}/${relatedRetro.slug}`}
+                className="flex items-center gap-3 rounded-md border border-border border-l-[3px] border-l-primary bg-surface px-5 py-4 no-underline transition-all duration-150 hover:-translate-y-0.5 hover:border-border-strong hover:bg-surface-2"
+              >
+                <span className="flex-1">
+                  <span className="block font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-primary">
+                    Retro · {relatedRetro.date}
+                  </span>
+                  <span className="mt-1 block text-[15px] font-semibold text-foreground">
+                    {relatedRetro.title}
+                  </span>
+                </span>
+                <svg className="text-muted" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>
+              </Link>
             </section>
           )}
         </div>
