@@ -5,6 +5,7 @@ import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import RetroEditor from "@/components/RetroEditor";
 import MilestoneCollapse from "@/components/MilestoneCollapse";
+import SubDocNav from "@/components/SubDocNav";
 import { mdxComponents } from "@/components/MDXComponents";
 import FloatingToc from "@/components/FloatingToc";
 import { getRetroProject, getAllRetroSlugs } from "@/lib/retros";
@@ -122,28 +123,12 @@ export default async function RetroDetailPage({
             />
           </div>
 
-          {/* Sub-doc navigation */}
+          {/* Sub-doc navigation (click/scroll highlight follows reading position) */}
           {(project.subDocs.length > 0 || project.milestones.length > 0) && (
-            <nav className="sticky top-[60px] z-40 mb-12 flex flex-wrap items-center gap-1 rounded-md border border-border bg-surface px-3 py-2" aria-label="子文档导航">
-              <span className="px-1.5 py-1.5 font-mono text-xs font-semibold text-subtle">retros/</span>
-              <span className="rounded-sm border border-[var(--tb-primary-tint-strong)] bg-[var(--tb-primary-tint)] px-3 py-1.5 font-mono text-[13px] font-medium text-primary">
-                index.mdx
-              </span>
-              {project.subDocs.map((doc) => (
-                <a
-                  key={doc.file}
-                  href={`#sub-${encodeURIComponent(doc.file)}`}
-                  className="rounded-sm px-3 py-1.5 font-mono text-[13px] font-medium text-muted no-underline transition-colors hover:bg-surface-2 hover:text-primary"
-                >
-                  {doc.file}
-                </a>
-              ))}
-              {project.milestones.length > 0 && (
-                <span className="ml-auto pr-1 font-mono text-[11px] text-subtle">
-                  {project.milestones.length + 1 + project.subDocs.length} files
-                </span>
-              )}
-            </nav>
+            <SubDocNav
+              subDocs={project.subDocs.map((d) => ({ file: d.file, title: d.title }))}
+              milestoneCount={project.milestones.length}
+            />
           )}
 
           {/* TOC (level-2 headings of the article) */}
