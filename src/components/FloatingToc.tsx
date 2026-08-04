@@ -43,20 +43,24 @@ export default function FloatingToc({ headings }: Props) {
 
   return (
     <>
-      {/* Floating button */}
+      {/* Floating button: amber drawer handle on the right edge, vertically centered */}
       <button
         ref={btnRef}
         onClick={() => setOpen(!open)}
-        className="fixed bottom-6 right-6 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface text-muted shadow-lg transition-all hover:border-primary hover:text-primary"
+        className={`fixed right-3 top-1/2 z-50 flex -translate-y-1/2 flex-col items-center gap-1.5 rounded-lg border px-2 py-3.5 transition-all ${
+          open
+            ? "border-primary bg-primary-strong text-primary-foreground shadow-[0_0_20px_rgba(224,168,81,0.45)]"
+            : "border-primary/50 bg-primary text-primary-foreground shadow-[0_0_16px_rgba(224,168,81,0.35)] hover:bg-primary-strong hover:shadow-[0_0_24px_rgba(224,168,81,0.5)]"
+        }`}
         aria-label="打开目录"
       >
         <svg
-          width="18"
-          height="18"
+          width="17"
+          height="17"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2"
+          strokeWidth="2.2"
           strokeLinecap="round"
           strokeLinejoin="round"
         >
@@ -67,13 +71,14 @@ export default function FloatingToc({ headings }: Props) {
           <line x1="3" y1="12" x2="3.01" y2="12" />
           <line x1="3" y1="18" x2="3.01" y2="18" />
         </svg>
+        <span className="font-mono text-[11px] font-bold tracking-[0.05em]">目录</span>
       </button>
 
-      {/* Panel */}
+      {/* Panel: pops out to the left of the handle */}
       {open && (
         <div
           ref={panelRef}
-          className="fixed bottom-20 right-6 z-50 w-64 rounded-lg border border-border bg-surface p-4 shadow-2xl"
+          className="fixed right-16 top-1/2 z-50 w-64 -translate-y-1/2 rounded-lg border border-border bg-surface p-4 shadow-2xl"
         >
           <div className="mb-2 flex items-center justify-between">
             <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-subtle">
