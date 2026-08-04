@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { memoizeOnContent } from "./cache";
 import type {
   RetroProject,
   Milestone,
@@ -85,6 +86,35 @@ function normalizeDates(data: Record<string, unknown>): void {
   }
 }
 
+// Normalize frontmatter so missing fields never leak `undefined` into render
+function normalizeRetroFrontmatter(data: Record<string, unknown>, slug: string): RetroFrontmatter {
+  const status = data.status as string;
+  const reviewStatus = data.review_status as string;
+  return {
+    title: typeof data.title === "string" && data.title ? data.title : slug,
+    date: typeof data.date === "string" ? data.date : "",
+    period: typeof data.period === "string" ? data.period : undefined,
+    status: ["ongoing", "completed", "abandoned"].includes(status)
+      ? (status as RetroFrontmatter["status"])
+      : "ongoing",
+    tags: Array.isArray(data.tags)
+      ? data.tags.filter((t): t is string => typeof t === "string")
+      : [],
+    template_version: typeof data.template_version === "number" ? data.template_version : 1,
+    summary: typeof data.summary === "string" ? data.summary : "",
+    highlight: typeof data.highlight === "string" ? data.highlight : undefined,
+    understanding_score: typeof data.understanding_score === "number" ? data.understanding_score : null,
+    review_after: typeof data.review_after === "string" ? data.review_after : null,
+    review_status: ["pending", "reviewing", "reviewed"].includes(reviewStatus)
+      ? (reviewStatus as RetroFrontmatter["review_status"])
+      : null,
+    repo: typeof data.repo === "string" ? data.repo : undefined,
+    commits: Array.isArray(data.commits) ? data.commits : undefined,
+    prs: Array.isArray(data.prs) ? data.prs : undefined,
+    sub_docs: Array.isArray(data.sub_docs) ? data.sub_docs : undefined,
+  };
+}
+
 // Get a single project by year and slug
 export function getRetroProject(year: string, slug: string): RetroProject | null {
   const projectDir = path.join(CONTENT_DIR, year, slug);
@@ -95,7 +125,7 @@ export function getRetroProject(year: string, slug: string): RetroProject | null
   const raw = fs.readFileSync(indexPath, "utf-8");
   const { data, content } = matter(raw);
   normalizeDates(data);
-  const frontmatter = data as RetroFrontmatter;
+  const frontmatter = normalizeRetroFrontmatter(data, slug);
 
   const milestones = readMilestones(projectDir);
   const subDocs = readSubDocs(projectDir, frontmatter.sub_docs || []);
@@ -110,8 +140,8 @@ export function getRetroProject(year: string, slug: string): RetroProject | null
   };
 }
 
-// Get all projects (sorted by date descending)
-export function getAllRetroProjects(): RetroProject[] {
+// Get all projects (sorted by date descending), cached by content mtime
+export const getAllRetroProjects = memoizeOnContent(CONTENT_DIR, () => {
   const years = getYearDirs();
   const projects: RetroProject[] = [];
 
@@ -126,18 +156,7 @@ export function getAllRetroProjects(): RetroProject[] {
   return projects.sort(
     (a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
   );
-}
-
-// Get projects pending review (review_after <= today, not yet reviewed)
-export function getPendingReviewProjects(): RetroProject[] {
-  const today = new Date().toISOString().split("T")[0];
-  return getAllRetroProjects().filter(
-    (p) =>
-      p.frontmatter.review_after &&
-      p.frontmatter.review_after <= today &&
-      p.frontmatter.review_status !== "reviewed"
-  );
-}
+});
 
 // Get all unique tags with counts
 export function getRetroTags(): Map<string, number> {

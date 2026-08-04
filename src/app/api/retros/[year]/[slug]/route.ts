@@ -4,11 +4,21 @@ import { updateFrontmatter } from "@/lib/write";
 // Allowed fields to be updated via API
 const ALLOWED_FIELDS = ["understanding_score", "review_after", "review_status", "status"];
 
+// Path traversal guard: only accept a real year/slug shape, otherwise
+// `path.join` in write.ts could resolve `..` outside the content directory.
+const YEAR_RE = /^\d{4}$/;
+const SLUG_RE = /^[a-z0-9-]+$/i;
+
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ year: string; slug: string }> }
 ) {
   const { year, slug } = await params;
+
+  if (!YEAR_RE.test(year) || !SLUG_RE.test(slug)) {
+    return NextResponse.json({ error: "Invalid path params" }, { status: 400 });
+  }
+
   const body = await request.json();
 
   // Filter to only allowed fields

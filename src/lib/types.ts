@@ -95,12 +95,3 @@ export interface TagInfo {
   retroCount: number;
   pitfallCount: number;
 }
-
-export interface DashboardStats {
-  totalProjects: number;
-  ongoing: number;
-  completed: number;
-  abandoned: number;
-  totalPitfalls: number;
-  pendingReview: number;
-}

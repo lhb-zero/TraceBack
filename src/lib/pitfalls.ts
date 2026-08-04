@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { memoizeOnContent } from "./cache";
 import type { Pitfall, PitfallFrontmatter } from "./types";
 
 const CONTENT_DIR = path.join(process.cwd(), "content", "pitfalls");
@@ -25,6 +26,23 @@ function normalizeDates(data: Record<string, unknown>): void {
   }
 }
 
+// Normalize frontmatter so missing fields never leak `undefined` into render
+function normalizePitfallFrontmatter(data: Record<string, unknown>, slug: string): PitfallFrontmatter {
+  const severity = data.severity as string;
+  return {
+    title: typeof data.title === "string" && data.title ? data.title : slug,
+    date: typeof data.date === "string" ? data.date : "",
+    tags: Array.isArray(data.tags)
+      ? data.tags.filter((t): t is string => typeof t === "string")
+      : [],
+    severity: ["low", "medium", "high"].includes(severity)
+      ? (severity as PitfallFrontmatter["severity"])
+      : undefined,
+    related_project: typeof data.related_project === "string" ? data.related_project : undefined,
+    resolved: typeof data.resolved === "boolean" ? data.resolved : false,
+  };
+}
+
 // Get a single pitfall by year and slug
 export function getPitfall(year: string, slug: string): Pitfall | null {
   const filePath = path.join(CONTENT_DIR, year, `${slug}.mdx`);
@@ -37,13 +55,13 @@ export function getPitfall(year: string, slug: string): Pitfall | null {
   return {
     slug,
     year,
-    frontmatter: data as PitfallFrontmatter,
+    frontmatter: normalizePitfallFrontmatter(data, slug),
     content: content.trim(),
   };
 }
 
-// Get all pitfalls (sorted by date descending)
-export function getAllPitfalls(): Pitfall[] {
+// Get all pitfalls (sorted by date descending), cached by content mtime
+export const getAllPitfalls = memoizeOnContent(CONTENT_DIR, () => {
   const years = getYearDirs();
   const pitfalls: Pitfall[] = [];
 
@@ -61,7 +79,7 @@ export function getAllPitfalls(): Pitfall[] {
   return pitfalls.sort(
     (a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime()
   );
-}
+});
 
 // Get pitfalls related to a specific project
 export function getPitfallsByProject(projectSlug: string): Pitfall[] {
