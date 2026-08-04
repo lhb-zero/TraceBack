@@ -15,10 +15,11 @@ function H2(props: ComponentPropsWithoutRef<"h2">) {
     .map((c) => (typeof c === "string" ? c : ""))
     .join("")
     .trim();
+  // scroll offset must clear TopNav (60px) + sticky sub-doc nav (~40px)
   return (
     <h2
       id={text ? text : undefined}
-      className="tb-h2 mt-12 mb-5 scroll-mt-24 border-b border-border pb-3 text-[21px] font-bold leading-[1.3] tracking-[-0.015em] text-foreground first:mt-0"
+      className="tb-h2 mt-12 mb-5 scroll-mt-[120px] border-b border-border pb-3 text-[21px] font-bold leading-[1.3] tracking-[-0.015em] text-foreground first:mt-0"
       {...props}
     />
   );
