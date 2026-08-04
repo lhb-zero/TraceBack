@@ -8,6 +8,7 @@ import MilestoneCollapse from "@/components/MilestoneCollapse";
 import { mdxComponents } from "@/components/MDXComponents";
 import { getRetroProject, getAllRetroSlugs } from "@/lib/retros";
 import { getPitfallsByProject } from "@/lib/pitfalls";
+import { extractHeadings, headingId } from "@/lib/utils";
 
 export function generateStaticParams() {
   return getAllRetroSlugs();
@@ -24,6 +25,7 @@ export default async function RetroDetailPage({
 
   const relatedPitfalls = getPitfallsByProject(slug);
   const fm = project.frontmatter;
+  const headings = extractHeadings(project.content);
 
   const statusBadge = (status: string) => {
     switch (status) {
@@ -129,6 +131,30 @@ export default async function RetroDetailPage({
                   {project.milestones.length + 1 + project.subDocs.length} files
                 </span>
               )}
+            </nav>
+          )}
+
+          {/* TOC (level-2 headings of the article) */}
+          {headings.length > 0 && (
+            <nav className="mb-8 rounded-lg border border-border bg-surface p-5" aria-label="目录">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.05em] text-subtle">
+                目录
+              </span>
+              <ol className="mt-3 space-y-1.5">
+                {headings.map((h, i) => (
+                  <li key={h}>
+                    <a
+                      href={`#${headingId(h)}`}
+                      className="group flex items-baseline gap-3 rounded-sm px-2 py-1 font-mono text-[13px] text-muted no-underline transition-colors hover:bg-surface-2 hover:text-primary"
+                    >
+                      <span className="shrink-0 text-[11px] text-subtle">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <span className="truncate">{h}</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
             </nav>
           )}
 

@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef } from "react";
+import { Children, isValidElement, type ComponentPropsWithoutRef } from "react";
 import CodeBlock from "./CodeBlock";
 
 /* ============================================================
@@ -10,9 +10,15 @@ import CodeBlock from "./CodeBlock";
    ============================================================ */
 
 function H2(props: ComponentPropsWithoutRef<"h2">) {
+  // Build a stable anchor id from the heading text (matches extractHeadings in utils)
+  const text = Children.toArray(props.children)
+    .map((c) => (typeof c === "string" ? c : ""))
+    .join("")
+    .trim();
   return (
     <h2
-      className="tb-h2 mt-12 mb-5 border-b border-border pb-3 text-[21px] font-bold leading-[1.3] tracking-[-0.015em] text-foreground first:mt-0"
+      id={text ? text : undefined}
+      className="tb-h2 mt-12 mb-5 scroll-mt-24 border-b border-border pb-3 text-[21px] font-bold leading-[1.3] tracking-[-0.015em] text-foreground first:mt-0"
       {...props}
     />
   );
@@ -141,6 +147,19 @@ function Img(props: ComponentPropsWithoutRef<"img">) {
   );
 }
 
+/* pre wrapper: extract code language on the server side and pass it down
+   as a prop, so the client CodeBlock renders identically during hydration */
+function Pre(props: ComponentPropsWithoutRef<"pre">) {
+  let lang = "";
+  const child = props.children;
+  if (isValidElement(child)) {
+    const cls = (child.props as { className?: string })?.className || "";
+    const m = cls.match(/language-([\w-]+)/);
+    if (m) lang = m[1];
+  }
+  return <CodeBlock lang={lang} {...props} />;
+}
+
 export const mdxComponents = {
   h2: H2,
   h3: H3,
@@ -150,7 +169,7 @@ export const mdxComponents = {
   ol: Ol,
   li: Li,
   blockquote: Blockquote,
-  pre: CodeBlock,
+  pre: Pre,
   a: A,
   hr: Hr,
   strong: Strong,

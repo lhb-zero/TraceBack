@@ -1,25 +1,22 @@
 "use client";
 
-import { useRef, useState, isValidElement } from "react";
+import { useRef, useState } from "react";
 import type { ComponentPropsWithoutRef } from "react";
 
 /* ============================================================
    CodeBlock — 代码块容器
    顶部语言标签页 + 复制按钮，悬停边框提亮。
-   语言从嵌套 <code> 的 className="language-xxx" 中提取。
+   语言由服务端（MDXComponents 的 Pre 包装）提取后经 lang prop 传入，
+   避免客户端 hydration 时 children 序列化导致两端渲染不一致。
    ============================================================ */
 
-export default function CodeBlock({ children, ...props }: ComponentPropsWithoutRef<"pre">) {
+interface CodeBlockProps extends ComponentPropsWithoutRef<"pre"> {
+  lang?: string;
+}
+
+export default function CodeBlock({ lang, children, ...props }: CodeBlockProps) {
   const preRef = useRef<HTMLPreElement>(null);
   const [copied, setCopied] = useState(false);
-
-  // Extract language from the nested code element's className
-  let lang = "";
-  if (isValidElement(children)) {
-    const cls = (children.props as { className?: string }).className || "";
-    const m = cls.match(/language-([\w-]+)/);
-    if (m) lang = m[1];
-  }
 
   const handleCopy = async () => {
     const text = preRef.current?.textContent || "";

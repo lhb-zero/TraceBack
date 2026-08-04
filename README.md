@@ -9,7 +9,7 @@
 [![MDX](https://img.shields.io/badge/Content-MDX-0F172A?style=flat-square&logo=mdx&logoColor=white)](https://mdxjs.com/)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 
-个人开发者专用的项目复盘与技术成长追踪系统：项目做完后沉淀成结构化复盘，几个月后回来快速回忆全貌，遇到相似问题时搜到历史解法。所有内容为标准 MDX 纯文本，任何编辑器可打开，核心依赖仅 4 个，换框架零迁移成本。
+个人开发者专用的项目复盘与技术成长追踪系统：项目做完后沉淀成结构化复盘，几个月后回来快速回忆全貌，遇到相似问题时搜到历史解法。所有内容为标准 MDX 纯文本，任何编辑器可打开，不依赖任何运行时服务，换框架零迁移成本。
 
 ---
 
@@ -55,9 +55,11 @@
 
 ```bash
 npm install
-npm run dev      # 开发：http://localhost:3000
+npm run dev      # 启动时自动重建搜索索引；开发：http://localhost:3000
 npm run build    # 构建（先生成搜索索引，再 next build）
 ```
+
+> 新增内容后如需立即更新搜索索引（dev 模式下新内容可随时被搜到），可手动执行 `npm run build:search`。
 
 ## 使用教程
 

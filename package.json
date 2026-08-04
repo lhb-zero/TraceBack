@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "node scripts/build-search-index.mjs && next dev",
     "build": "node scripts/build-search-index.mjs && next build",
     "build:search": "node scripts/build-search-index.mjs",
     "start": "next start",
