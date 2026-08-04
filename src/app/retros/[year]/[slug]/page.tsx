@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
@@ -14,6 +15,18 @@ import { extractHeadings, headingId } from "@/lib/headings";
 
 export function generateStaticParams() {
   return getAllRetroSlugs();
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ year: string; slug: string }>;
+}): Promise<Metadata> {
+  const { year, slug } = await params;
+  const project = getRetroProject(year, slug);
+  return {
+    title: project ? `${project.frontmatter.title} · TraceBack` : "复盘 · TraceBack",
+  };
 }
 
 export default async function RetroDetailPage({

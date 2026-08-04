@@ -47,7 +47,7 @@ export default function TopNav({ activeKey }: { activeKey?: string }) {
           <span className="font-mono text-[16px] font-bold tracking-[-0.01em] text-foreground">
             TraceBack
           </span>
-          <span className="font-mono text-xs text-subtle">// 记录每一次技术成长</span>
+          <span className="font-mono text-xs text-subtle">{"// 记录每一次技术成长"}</span>
         </Link>
 
         {/* Navigation */}

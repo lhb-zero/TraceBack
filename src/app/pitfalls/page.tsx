@@ -1,12 +1,26 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { getAllPitfalls } from "@/lib/pitfalls";
+
+export const metadata: Metadata = {
+  title: "踩坑记录 · TraceBack",
+};
 
 export default function PitfallsPage() {
   const pitfalls = getAllPitfalls();
   const resolved = pitfalls.filter((p) => p.frontmatter.resolved).length;
   const unsolved = pitfalls.length - resolved;
+
+  // Group by year (matches URL structure), years sorted descending
+  const byYear = new Map<string, typeof pitfalls>();
+  for (const p of pitfalls) {
+    const list = byYear.get(p.year) || [];
+    list.push(p);
+    byYear.set(p.year, list);
+  }
+  const years = Array.from(byYear.keys()).sort((a, b) => b.localeCompare(a));
 
   const severityLabel = (s?: string) =>
     s === "high" ? "严重" : s === "medium" ? "中等" : s === "low" ? "轻微" : s;
@@ -31,9 +45,17 @@ export default function PitfallsPage() {
             </p>
           </div>
 
-          {/* Pitfall cards grid */}
-          <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(380px,1fr))]">
-            {pitfalls.map((pitfall) => (
+          {/* Pitfall cards grid, grouped by year */}
+          <div className="mt-8 space-y-10">
+            {years.map((year) => (
+              <section key={year}>
+                <h2 className="mb-4 flex items-center gap-3 font-mono text-[15px] font-bold text-foreground">
+                  <span className="h-[9px] w-[9px] rotate-45 border border-border-strong bg-surface" aria-hidden="true" />
+                  {year}
+                  <span className="font-mono text-xs font-normal text-subtle">{byYear.get(year)!.length} 条</span>
+                </h2>
+                <div className="grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(380px,1fr))]">
+                  {byYear.get(year)!.map((pitfall) => (
               <Link
                 key={`${pitfall.year}/${pitfall.slug}`}
                 href={`/pitfalls/${pitfall.year}/${pitfall.slug}`}
@@ -73,6 +95,9 @@ export default function PitfallsPage() {
                   ))}
                 </div>
               </Link>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
 

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
@@ -12,6 +13,18 @@ import { extractHeadings, headingId } from "@/lib/headings";
 
 export function generateStaticParams() {
   return getAllPitfallSlugs();
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ year: string; slug: string }>;
+}): Promise<Metadata> {
+  const { year, slug } = await params;
+  const pitfall = getPitfall(year, slug);
+  return {
+    title: pitfall ? `${pitfall.frontmatter.title} · TraceBack` : "踩坑 · TraceBack",
+  };
 }
 
 export default async function PitfallDetailPage({

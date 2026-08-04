@@ -1,7 +1,12 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { getAllTags } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "标签索引 · TraceBack",
+};
 
 export default function TagsPage() {
   const tags = getAllTags();

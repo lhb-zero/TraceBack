@@ -1,10 +1,24 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { getAllRetroProjects } from "@/lib/retros";
 
+export const metadata: Metadata = {
+  title: "项目复盘 · TraceBack",
+};
+
 export default function RetrosPage() {
   const projects = getAllRetroProjects();
+
+  // Group by year (matches URL structure), years sorted descending
+  const byYear = new Map<string, typeof projects>();
+  for (const p of projects) {
+    const list = byYear.get(p.year) || [];
+    list.push(p);
+    byYear.set(p.year, list);
+  }
+  const years = Array.from(byYear.keys()).sort((a, b) => b.localeCompare(a));
 
   const statusBadge = (status: string) => {
     switch (status) {
@@ -39,9 +53,17 @@ export default function RetrosPage() {
             </p>
           </div>
 
-          {/* Project list */}
-          <div className="mt-8 space-y-4">
-            {projects.map((project) => (
+          {/* Project list, grouped by year */}
+          <div className="mt-8 space-y-10">
+            {years.map((year) => (
+              <section key={year}>
+                <h2 className="mb-4 flex items-center gap-3 font-mono text-[15px] font-bold text-foreground">
+                  <span className="h-[9px] w-[9px] rotate-45 border border-border-strong bg-surface" aria-hidden="true" />
+                  {year}
+                  <span className="font-mono text-xs font-normal text-subtle">{byYear.get(year)!.length} 个</span>
+                </h2>
+                <div className="space-y-4">
+                  {byYear.get(year)!.map((project) => (
               <Link
                 key={`${project.year}/${project.slug}`}
                 href={`/retros/${project.year}/${project.slug}`}
@@ -87,6 +109,9 @@ export default function RetrosPage() {
                   )}
                 </div>
               </Link>
+                  ))}
+                </div>
+              </section>
             ))}
           </div>
         </div>

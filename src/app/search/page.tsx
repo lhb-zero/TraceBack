@@ -79,6 +79,9 @@ export default function SearchPage() {
   }, []);
 
   useEffect(() => {
+    // localStorage is unavailable during SSR; loading history here is the
+    // standard client-only pattern (initial value stays [] on the server).
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHistory(loadHistory());
   }, []);
 
@@ -257,6 +260,9 @@ export default function SearchPage() {
                       <span className="min-w-0 flex-1 truncate font-mono text-[13px] text-foreground">
                         {item.q}
                       </span>
+                      {item.n > 0 && (
+                        <span className="shrink-0 font-mono text-xs text-subtle">{item.n} 结果</span>
+                      )}
                       {item.n === 0 && (
                         <span className="shrink-0 font-mono text-xs text-state-warning">无结果</span>
                       )}

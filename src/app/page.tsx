@@ -1,9 +1,14 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { getAllRetroProjects } from "@/lib/retros";
 import { getAllPitfalls } from "@/lib/pitfalls";
 import { getAllTags } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "首页 · TraceBack",
+};
 
 export default function Home() {
   // Read content once and derive stats/pending in memory (avoids re-reading
@@ -66,7 +71,7 @@ export default function Home() {
     grouped.get(year)!.push(entry);
   }
 
-  const statusBadge = (status: string, resolved?: boolean) => {
+  const statusBadge = (status: string) => {
     switch (status) {
       case "completed":
         return <span className="inline-flex items-center gap-[5px] rounded-sm border border-[rgba(70,181,112,0.28)] bg-[var(--tb-success-tint)] px-[9px] py-1 font-mono text-xs font-medium text-state-success"><span className="h-1.5 w-1.5 rounded-full bg-state-success" />已完成</span>;
@@ -214,7 +219,7 @@ export default function Home() {
                           <span className="text-[17px] font-semibold text-foreground">
                             {entry.title}
                           </span>
-                          {statusBadge(entry.status, entry.resolved)}
+                          {statusBadge(entry.status)}
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-mono text-xs text-subtle">{entry.date}</span>

@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import { getAllTags } from "@/lib/utils";
@@ -8,6 +9,15 @@ import { getPitfallsByTag } from "@/lib/pitfalls";
 
 export function generateStaticParams() {
   return getAllTags().map((t) => ({ tag: t.name }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ tag: string }>;
+}): Promise<Metadata> {
+  const { tag } = await params;
+  return { title: `#${decodeURIComponent(tag)} · TraceBack` };
 }
 
 export default async function TagDetailPage({

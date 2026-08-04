@@ -140,8 +140,10 @@ function Tr(props: ComponentPropsWithoutRef<"tr">) {
 
 function Img(props: ComponentPropsWithoutRef<"img">) {
   return (
+    // eslint-disable-next-line @next/next/no-img-element -- MDX content images; next/image needs explicit width/height
     <img
       className="my-6 max-w-full rounded-md border border-border"
+      alt={props.alt ?? ""}
       loading="lazy"
       {...props}
     />

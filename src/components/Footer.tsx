@@ -11,7 +11,7 @@ export default function Footer() {
           />
           <span className="font-mono text-[16px] font-bold text-foreground">TraceBack</span>
           <span className="font-mono text-xs text-subtle">
-            // 个人技术成长档案 · 本地归档 · SSG
+            {"// 个人技术成长档案 · 本地归档 · SSG"}
           </span>
         </div>
         <span className="font-mono text-xs text-subtle">v{pkg.version}</span>
