@@ -59,6 +59,15 @@
   /* ---- 内容类型色（复盘=品牌琥珀，踩坑=问题红） ---- */
   --tb-pitfall: var(--tb-state-error);
   --tb-pitfall-tint: var(--tb-error-tint);
+
+  /* ---- 浮层（浮动目录 / 弹窗 / 下拉）----
+     底色比页面背景亮一档形成层次，正文近纯白保证对比 */
+  --tb-float-bg: #1e2836;
+  --tb-float-bg-2: #273348;
+  --tb-float-border: #3a4a66;
+  --tb-float-text: #ffffff;
+  --tb-float-muted: #a9b6c9;
+  --tb-float-subtle: #75839b;
 }
 
 @theme inline {
@@ -82,6 +91,12 @@
   --color-state-neutral: var(--tb-state-neutral);
   --color-pitfall: var(--tb-pitfall);
   --color-pitfall-tint: var(--tb-pitfall-tint);
+  --color-float-bg: var(--tb-float-bg);
+  --color-float-bg-2: var(--tb-float-bg-2);
+  --color-float-border: var(--tb-float-border);
+  --color-float-text: var(--tb-float-text);
+  --color-float-muted: var(--tb-float-muted);
+  --color-float-subtle: var(--tb-float-subtle);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --radius-sm: var(--tb-radius-small);

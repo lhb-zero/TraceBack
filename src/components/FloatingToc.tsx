@@ -120,14 +120,14 @@ export default function FloatingToc({ headings }: Props) {
         ref={panelRef}
         role="dialog"
         aria-label="目录"
-        className={`fixed right-16 top-1/2 z-50 w-72 max-w-[calc(100vw-5rem)] -translate-y-1/2 overflow-hidden rounded-xl border border-border bg-surface shadow-[0_20px_56px_-16px_rgba(0,0,0,0.65)] ring-1 ring-primary/10 transition-all duration-300 ease-out ${
+        className={`fixed right-16 top-1/2 z-50 w-72 max-w-[calc(100vw-5rem)] -translate-y-1/2 overflow-hidden rounded-xl border border-float-border bg-float-bg shadow-[0_20px_56px_-16px_rgba(0,0,0,0.7),inset_0_1px_0_rgba(255,255,255,0.06)] ring-1 ring-primary/15 transition-all duration-300 ease-out ${
           open
             ? "translate-x-0 opacity-100"
             : "pointer-events-none translate-x-6 opacity-0"
         }`}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border bg-surface-2/60 px-4 py-3">
+        <div className="flex items-center justify-between border-b border-float-border bg-float-bg-2 px-4 py-3">
           <div className="flex items-center gap-2">
             <svg
               width="14"
@@ -148,7 +148,7 @@ export default function FloatingToc({ headings }: Props) {
               <line x1="3" y1="12" x2="3.01" y2="12" />
               <line x1="3" y1="18" x2="3.01" y2="18" />
             </svg>
-            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-subtle">
+            <span className="font-mono text-[11px] font-semibold uppercase tracking-[0.06em] text-float-muted">
               目录
             </span>
             <span className="rounded-sm bg-[var(--tb-primary-tint)] px-1.5 py-px font-mono text-[10px] font-semibold text-primary">
@@ -157,7 +157,7 @@ export default function FloatingToc({ headings }: Props) {
           </div>
           <button
             onClick={() => setOpen(false)}
-            className="rounded-sm px-1.5 py-0.5 font-mono text-sm text-subtle transition-colors hover:bg-sunken hover:text-foreground"
+            className="rounded-sm px-1.5 py-0.5 font-mono text-sm text-float-muted transition-colors hover:bg-black/30 hover:text-float-text"
             aria-label="关闭目录"
           >
             ×
@@ -174,13 +174,13 @@ export default function FloatingToc({ headings }: Props) {
                   onClick={() => setOpen(false)}
                   className={`group flex items-baseline gap-2.5 rounded-md border-l-2 px-2.5 py-[7px] font-mono text-[13px] no-underline transition-colors duration-150 ${
                     active === i
-                      ? "border-l-primary bg-[var(--tb-primary-tint)] text-primary"
-                      : "border-l-transparent text-muted hover:bg-surface-2 hover:text-foreground"
+                      ? "border-l-primary bg-[rgba(224,168,81,0.18)] text-primary-strong"
+                      : "border-l-transparent text-float-text hover:bg-white/[0.06] hover:text-float-text"
                   }`}
                 >
                   <span
                     className={`shrink-0 text-[10px] transition-colors ${
-                      active === i ? "text-primary" : "text-subtle group-hover:text-muted"
+                      active === i ? "text-primary" : "text-float-subtle group-hover:text-float-muted"
                     }`}
                   >
                     {String(i + 1).padStart(2, "0")}
@@ -193,14 +193,14 @@ export default function FloatingToc({ headings }: Props) {
         </nav>
 
         {/* Reading progress */}
-        <div className="border-t border-border px-4 py-2.5">
-          <div className="h-[3px] w-full overflow-hidden rounded-full bg-sunken">
+        <div className="border-t border-float-border px-4 py-2.5">
+          <div className="h-[3px] w-full overflow-hidden rounded-full bg-black/40">
             <div
               className="h-full rounded-full bg-gradient-to-r from-primary to-primary-strong transition-[width] duration-150 ease-out"
               style={{ width: `${progress}%` }}
             />
           </div>
-          <div className="mt-1.5 flex items-center justify-between font-mono text-[10px] text-subtle">
+          <div className="mt-1.5 flex items-center justify-between font-mono text-[10px] text-float-muted">
             <span>
               {String(active + 1).padStart(2, "0")} / {String(headings.length).padStart(2, "0")}
             </span>
