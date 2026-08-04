@@ -5,8 +5,9 @@ import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import PitfallEditor from "@/components/PitfallEditor";
 import { mdxComponents } from "@/components/MDXComponents";
+import FloatingToc from "@/components/FloatingToc";
 import { getPitfall, getAllPitfallSlugs } from "@/lib/pitfalls";
-import { extractHeadings, headingId } from "@/lib/utils";
+import { extractHeadings, headingId } from "@/lib/headings";
 
 export function generateStaticParams() {
   return getAllPitfallSlugs();
@@ -147,6 +148,7 @@ export default async function PitfallDetailPage({
         </div>
       </main>
       <Footer />
+      <FloatingToc headings={headings} />
     </>
   );
 }

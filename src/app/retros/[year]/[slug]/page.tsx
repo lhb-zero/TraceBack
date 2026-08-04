@@ -6,9 +6,10 @@ import Footer from "@/components/Footer";
 import RetroEditor from "@/components/RetroEditor";
 import MilestoneCollapse from "@/components/MilestoneCollapse";
 import { mdxComponents } from "@/components/MDXComponents";
+import FloatingToc from "@/components/FloatingToc";
 import { getRetroProject, getAllRetroSlugs } from "@/lib/retros";
 import { getPitfallsByProject } from "@/lib/pitfalls";
-import { extractHeadings, headingId } from "@/lib/utils";
+import { extractHeadings, headingId } from "@/lib/headings";
 
 export function generateStaticParams() {
   return getAllRetroSlugs();
@@ -233,6 +234,7 @@ export default async function RetroDetailPage({
         </div>
       </main>
       <Footer />
+      <FloatingToc headings={headings} />
     </>
   );
 }
