@@ -1,12 +1,13 @@
 {
   "name": "traceback",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "private": true,
   "scripts": {
     "dev": "node scripts/build-search-index.mjs && next dev",
     "build": "node scripts/build-search-index.mjs && next build",
     "build:search": "node scripts/build-search-index.mjs",
     "start": "next start",
+    "test": "node --test \"tests/*.test.mjs\"",
     "lint": "eslint"
   },
   "dependencies": {

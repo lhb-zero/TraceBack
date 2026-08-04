@@ -7,12 +7,14 @@ const CONTENT_DIR = path.join(process.cwd(), "content");
 /**
  * Update specific frontmatter fields in an MDX file without touching the body.
  * Returns true on success, false if file not found.
+ * `contentDir` is injectable for tests (defaults to the real content/).
  */
 export function updateFrontmatter(
   relativePath: string,
-  updates: Record<string, unknown>
+  updates: Record<string, unknown>,
+  contentDir: string = CONTENT_DIR
 ): boolean {
-  const filePath = path.join(CONTENT_DIR, relativePath);
+  const filePath = path.join(contentDir, relativePath);
 
   if (!fs.existsSync(filePath)) return false;
 

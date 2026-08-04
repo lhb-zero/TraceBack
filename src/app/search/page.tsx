@@ -5,6 +5,7 @@ import Fuse from "fuse.js";
 import Link from "next/link";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
+import { queryTerms, makeSnippet, splitHighlight } from "@/lib/search-highlight";
 
 interface SearchEntry {
   type: "retro" | "pitfall";
@@ -65,6 +66,28 @@ function relativeTime(ts: number): string {
   return new Date(ts).toLocaleDateString("zh-CN");
 }
 
+// --- Keyword highlighting helpers (pure functions) ---
+
+/** Render `text` with keyword hits wrapped in <mark>. */
+function Highlight({ text, terms }: { text: string; terms: string[] }) {
+  return (
+    <>
+      {splitHighlight(text, terms).map((seg, i) =>
+        seg.hit ? (
+          <mark
+            key={i}
+            className="rounded-[2px] bg-[var(--tb-primary-tint)] px-[1px] text-foreground"
+          >
+            {seg.part}
+          </mark>
+        ) : (
+          seg.part
+        )
+      )}
+    </>
+  );
+}
+
 export default function SearchPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<"all" | "retro" | "pitfall">("all");
@@ -99,6 +122,8 @@ export default function SearchPage() {
       }),
     [index]
   );
+
+  const terms = useMemo(() => queryTerms(query), [query]);
 
   const results = useMemo(() => {
     if (!query.trim()) return [];
@@ -316,11 +341,12 @@ export default function SearchPage() {
                   )}
                   <span className="font-mono text-xs text-subtle">{entry.date}</span>
                 </div>
-                <h3 className="text-[17px] font-semibold text-foreground">{entry.title}</h3>
+                <h3 className="text-[17px] font-semibold text-foreground">
+                  <Highlight text={entry.title} terms={terms} />
+                </h3>
                 {entry.summary && (
                   <p className="mt-1 text-sm leading-[1.6] text-muted">
-                    {entry.summary.slice(0, 120)}
-                    {entry.summary.length > 120 ? "..." : ""}
+                    <Highlight text={makeSnippet(entry.summary, terms)} terms={terms} />
                   </p>
                 )}
               </Link>
