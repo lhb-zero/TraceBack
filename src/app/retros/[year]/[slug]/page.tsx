@@ -173,9 +173,13 @@ export default async function RetroDetailPage({
                   id={`sub-${encodeURIComponent(doc.file)}`}
                   className="scroll-mt-[120px] border-t border-border pt-8"
                 >
-                  <div className="mb-4 flex items-baseline gap-3">
+                  <div className="mb-4 flex flex-wrap items-center gap-2.5">
+                    <span className="inline-flex items-center gap-1.5 rounded-sm border border-[rgba(224,168,81,0.35)] bg-[var(--tb-primary-tint)] px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-[0.06em] text-primary">
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><path d="M14 2v6h6" /></svg>
+                      子文档
+                    </span>
                     <h2 className="text-[22px] font-bold tracking-[-0.015em]">{doc.title}</h2>
-                    <span className="font-mono text-xs text-subtle">{doc.file}</span>
+                    <span className="font-mono text-xs text-subtle">{doc.file.replace(/\.mdx$/, "")}</span>
                   </div>
                   <article className="prose-tb">
                     <MDXRemote
