@@ -1,3 +1,5 @@
+import pkg from "../../package.json";
+
 export default function Footer() {
   return (
     <footer className="mt-16 border-t border-border bg-sunken">
@@ -12,7 +14,7 @@ export default function Footer() {
             // 个人技术成长档案 · 本地归档 · SSG
           </span>
         </div>
-        <span className="font-mono text-xs text-subtle">v0.1.0</span>
+        <span className="font-mono text-xs text-subtle">v{pkg.version}</span>
       </div>
     </footer>
   );
