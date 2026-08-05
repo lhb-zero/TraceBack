@@ -43,8 +43,10 @@ next-env.d.ts
 # private docs (个人文档，不公开)
 /docs/
 
-# nested private content repo (真实内容私有化，2026-08-05 起)
+# nested private content repo（真实内容私有化；已追踪的 10 个示例文件已定格，新文件不再进入公开仓库）
 /content/
+# 私有仓库的 .git 目录绝不进入公开仓库
+content/.git*/
 
 # workbuddy workspace memory (工作区记忆，不公开)
 /.workbuddy/

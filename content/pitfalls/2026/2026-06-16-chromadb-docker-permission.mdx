@@ -1,0 +1,56 @@
+---
+title: "ChromaDB 持久化路径在 Docker 中权限报错"
+date: 2026-06-16
+tags: [chromadb, docker, 权限问题]
+severity: medium
+related_project: "rag-chatbot"
+resolved: true
+---
+
+## 问题现象
+
+Docker 容器启动后，ChromaDB 初始化报错：
+```
+sqlite3.OperationalError: unable to open database file
+```
+容器内 `/chroma/data` 目录存在但无法写入。
+
+## 环境
+
+- OS: Ubuntu 22.04 (服务器)
+- Docker: 24.0
+- ChromaDB: 0.4.22
+- Python: 3.11
+
+## 排查过程
+
+1. 进入容器检查目录权限：`ls -la /chroma/data` → 属主是 root，但进程以非 root 用户运行
+2. 尝试 `chmod 777` → 临时解决但重启后失效
+3. 检查 Dockerfile → 基础镜像默认用户非 root
+
+## 根因
+
+Docker volume 挂载时，宿主机目录的 uid/gid 与容器内进程用户不匹配。ChromaDB 底层用 SQLite，需要目录写权限。
+
+## 解决方案
+
+在 docker-compose.yml 中指定用户：
+```yaml
+services:
+  app:
+    user: "1000:1000"
+    volumes:
+      - ./chroma_data:/chroma/data
+```
+
+或在 Dockerfile 中：
+```dockerfile
+RUN chown -R appuser:appuser /chroma
+USER appuser
+```
+
+## 预防/备忘
+
+- 凡是用 SQLite/文件存储的组件，Docker 部署时都要注意 uid 映射
+- 开发环境（Windows/Mac）通常没这个问题，Linux 服务器才会触发
+- 快速验证：`docker exec -it container_name whoami` 确认运行用户
