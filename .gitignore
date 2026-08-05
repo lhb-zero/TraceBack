@@ -43,6 +43,9 @@ next-env.d.ts
 # private docs (个人文档，不公开)
 /docs/
 
+# nested private content repo (真实内容私有化，2026-08-05 起)
+/content/
+
 # workbuddy workspace memory (工作区记忆，不公开)
 /.workbuddy/
 
