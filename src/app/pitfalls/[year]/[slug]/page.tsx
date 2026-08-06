@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import PitfallEditor from "@/components/PitfallEditor";
@@ -147,7 +148,7 @@ export default async function PitfallDetailPage({
             <MDXRemote
               source={pitfall.content}
               components={mdxComponents}
-              options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+              options={{ parseFrontmatter: false, mdxOptions: { format: "md", remarkPlugins: [remarkGfm] } }}
             />
           </article>
 

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import remarkGfm from "remark-gfm";
 import TopNav from "@/components/TopNav";
 import Footer from "@/components/Footer";
 import RetroEditor from "@/components/RetroEditor";
@@ -173,7 +174,7 @@ export default async function RetroDetailPage({
             <MDXRemote
               source={project.content}
               components={mdxComponents}
-              options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+              options={{ parseFrontmatter: false, mdxOptions: { format: "md", remarkPlugins: [remarkGfm] } }}
             />
           </article>
 
@@ -198,7 +199,7 @@ export default async function RetroDetailPage({
                     <MDXRemote
                       source={doc.content}
                       components={mdxComponents}
-                      options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+                      options={{ parseFrontmatter: false, mdxOptions: { format: "md", remarkPlugins: [remarkGfm] } }}
                     />
                   </article>
                 </section>
@@ -225,7 +226,7 @@ export default async function RetroDetailPage({
                     <MDXRemote
                       source={ms.content}
                       components={mdxComponents}
-                      options={{ parseFrontmatter: false, mdxOptions: { format: "md" } }}
+                      options={{ parseFrontmatter: false, mdxOptions: { format: "md", remarkPlugins: [remarkGfm] } }}
                     />
                   </MilestoneCollapse>
                 ))}
